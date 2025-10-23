@@ -11,6 +11,8 @@
   <!-- Three.js et OrbitControls -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
+  <!-- OBJLoader -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/loaders/OBJLoader.js"></script>
 
   <style>
     body {
@@ -105,11 +107,11 @@
     <p>&copy; 2025 E4 project</p>
   </footer>
 
-  <!-- Script pour le cube 3D -->
+  <!-- Script pour afficher test_pots.obj -->
   <script>
     window.addEventListener('DOMContentLoaded', () => {
       const container = document.getElementById('canvas-container');
-      console.log(container); // vérifier que le conteneur existe
+      console.log(container);
 
       // Scène
       const scene = new THREE.Scene();
@@ -129,28 +131,38 @@
       renderer.setSize(container.clientWidth, container.clientHeight);
       container.appendChild(renderer.domElement);
 
-      // Cube
-      const geometry = new THREE.BoxGeometry();
-      const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-      const cube = new THREE.Mesh(geometry, material);
-      scene.add(cube);
-
       // Contrôles orbitaux
       const controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
 
+      // Lumière pour mieux voir le modèle
+      const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+      scene.add(ambientLight);
+
+      // Chargement du modèle OBJ
+      const loader = new THREE.OBJLoader();
+      loader.load(
+        'test_pots.obj', // chemin vers ton fichier .obj
+        function (object) {
+          // Ajuster position et taille si nécessaire
+          object.position.set(0, 0, 0);
+          object.scale.set(1, 1, 1);
+          scene.add(object);
+        },
+        function (xhr) { console.log((xhr.loaded / xhr.total * 100) + '% chargé'); },
+        function (error) { console.error('Erreur lors du chargement :', error); }
+      );
+
       // Animation
       function animate() {
         requestAnimationFrame(animate);
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
         controls.update();
         renderer.render(scene, camera);
       }
 
       animate();
 
-      // Adapter le rendu au redimensionnement
+      // Redimensionnement
       window.addEventListener('resize', () => {
         camera.aspect = container.clientWidth / container.clientHeight;
         camera.updateProjectionMatrix();
