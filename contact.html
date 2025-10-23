@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact - Plantastic</title>
+  
+
+
+
+</head>
+<body>
+  
+  <header style="background: url('images/fond-plantes.webp'); background-size: cover; background-position: center; color: white; padding: 50px 20px; text-align: center;">
+    <h1 style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 50px;">Plantastic</h1>
+    <p>Amélie CUESTA and Tom DE SAINT JORE</p>
+  </header>
+
+
+  <main style="display: flex; justify-content: center; align-items: center; gap: 40px; padding: 40px;">
+  
+
+
+  <!-- Colonne gauche : image tom -->
+  <div style="flex-shrink: 0;">
+    <img src="C:/Users/ameli/Mon Drive/01-ESIEE/E4/3d programming/images/tom.jpg" 
+         style="width: 350px; height: 500px; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+  </div>
+  
+  
+  <!-- milieu : le formulaire -->
+  <div style="max-width: 400px; text-align: left;">
+    <h2 style="text-align: center;">Contactez-nous</h2>
+    <p style="text-align: center;">Vous pouvez nous envoyer un email à 
+      <a href="mailto:contact@plantastic.com">contact@plantastic.com</a>
+    </p>
+    <p style="text-align: center;">Ou remplir notre formulaire de contact :</p>
+
+    <form>
+      <label for="nom">Nom :</label><br>
+      <input type="text" id="nom" name="nom" 
+             style="display: block; margin: 10px 0; width: 100%; padding: 8px;"><br>
+
+      <label for="email">Email :</label><br>
+      <input type="email" id="email" name="email" 
+             style="display: block; margin: 10px 0; width: 100%; padding: 8px;"><br>
+
+      <label for="message">Message :</label><br>
+      <textarea id="message" name="message" rows="5" 
+                style="display: block; margin: 10px 0; width: 100%; padding: 8px;"></textarea><br>
+
+      <button type="submit" 
+              style="display: block; margin: 10px auto; padding: 10px 20px; background-color: #008000; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        Envoyer
+      </button>
+    </form>
+  </div>
+
+  <!-- Colonne droite : image amelou -->
+  <div style="flex-shrink: 0;">
+    <img src="C:/Users/ameli/Mon Drive/01-ESIEE/E4/3d programming/images/amelou.jpg" 
+         style="width: 350px; height: 500px; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+  </div>
+
+  
+
+</main>
+
+
+  <footer>
+    <p>&copy; 2025 E4 project</p>
+  </footer>
+</body>
+</html>

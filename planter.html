@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planter - Plantastic</title>
+
+  <!-- Police d’écriture -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Three.js et OrbitControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+
+    header {
+      background: url("images/fond-plantes.webp") no-repeat center center;
+      background-size: cover;
+      color: white;
+      padding: 50px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 50px;
+    }
+
+    nav {
+      background: #008000;
+      padding: 10px;
+      text-align: center;
+    }
+
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+
+    nav a:hover {
+      color: black;
+    }
+
+    main {
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Conteneur pour futur objet 3D */
+    #canvas-container {
+      width: 800px;
+      height: 600px;
+      border: 1px solid #ccc;
+      background-color: #f0f0f0;
+      margin: auto;
+    }
+
+    footer {
+      background: #582900;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Plantastic</h1>
+    <p>Amélie CUESTA and Tom DE SAINT JORE</p>
+  </header>
+
+  <nav>
+    <a href="index.html">Accueil</a>
+    <a href="a_propos.html">À propos</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+
+  <main>
+    <h2>Visualisation 3D</h2>
+    <p>Le modèle 3D sera affiché ici.</p>
+    <div id="canvas-container"></div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 E4 project</p>
+  </footer>
+
+  <!-- Ici tu pourras ajouter ton script OBJLoader plus tard -->
+</body>
+</html>
