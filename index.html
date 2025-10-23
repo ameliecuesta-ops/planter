@@ -1,26 +1,119 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Planter - Plantastic</title>
+
+  <!-- Police -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+
   <style>
-    body { font-family: Arial, sans-serif; margin:0; background:#f4f4f4; color:#333; }
-    header { background: url("images/fond-plantes.webp") no-repeat center center; background-size:cover; color:#fff; padding:50px 20px; text-align:center; }
-    header h1 { font-family:'Playfair Display', serif; font-size:50px; font-weight:700; }
-    nav { background:#008000; padding:10px; text-align:center; }
-    nav a { color:#fff; margin:0 15px; text-decoration:none; font-weight:700; }
-    main { padding:40px 20px; display:flex; flex-direction:column; align-items:center; gap:20px; }
-    #canvas-container { width:800px; height:600px; border:1px solid #ccc; background:#f0f0f0; margin:auto; position:relative; }
-    #webgl-error { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.9); z-index:10; font-weight:700; display:none; }
-    footer { background:#582900; color:#fff; text-align:center; padding:10px; position:fixed; bottom:0; width:100%; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+
+    header {
+      background: url("images/fond-plantes.webp") no-repeat center center;
+      background-size: cover;
+      color: white;
+      padding: 50px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 50px;
+    }
+
+    nav {
+      background: #008000;
+      padding: 10px;
+      text-align: center;
+    }
+
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+
+    nav a:hover {
+      color: black;
+    }
+
+    main {
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Conteneur pour l'objet 3D */
+    #canvas-container {
+      width: 800px;
+      height: 600px;
+      border: 1px solid #ccc;
+      background-color: #f0f0f0;
+      margin: auto;
+      position: relative;
+    }
+
+    /* message si WebGL indisponible */
+    #webgl-error {
+      position: absolute;
+      left: 0; right: 0; top: 0; bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      font-weight: bold;
+      background: rgba(255,255,255,0.95);
+      z-index: 5;
+      display: none;
+      padding: 10px;
+      text-align: center;
+    }
+
+    footer {
+      background: #582900;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    /* Responsive fallback: shrink container on small screens */
+    @media (max-width: 900px) {
+      #canvas-container {
+        width: 95%;
+        height: 60vh;
+      }
+    }
   </style>
 </head>
 <body>
-  <header><h1>Plantastic</h1><p>Amélie CUESTA and Tom DE SAINT JORE</p></header>
+
+  <header>
+    <h1>Plantastic</h1>
+    <p>Amélie CUESTA and Tom DE SAINT JORE</p>
+  </header>
+
   <nav>
-    <a href="index.html">Accueil</a><a href="a_propos.html">À propos</a><a href="contact.html">Contact</a>
+    <a href="index.html">Accueil</a>
+    <a href="a_propos.html">À propos</a>
+    <a href="contact.html">Contact</a>
   </nav>
 
   <main>
@@ -31,30 +124,50 @@
     </div>
   </main>
 
-  <footer><p>&copy; 2025 E4 project</p></footer>
+  <footer>
+    <p>&copy; 2025 E4 project</p>
+  </footer>
 
-  <!-- Script ES Module : n'utilise PAS les <script src="three.min.js"> classiques -->
+  <!-- Script principal (ES modules — Option A : CDN URLs) -->
   <script type="module">
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
     import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/controls/OrbitControls.js';
     import { OBJLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/loaders/OBJLoader.js';
 
-    // Vérif WebGL
-    if (!THREE.WEBGL.isWebGLAvailable()) {
-      document.getElementById('webgl-error').style.display = 'flex';
+    // Vérification WebGL simple
+    function isWebGLAvailable() {
+      try {
+        const canvas = document.createElement('canvas');
+        return !!(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+      } catch (e) {
+        return false;
+      }
+    }
+    if (!isWebGLAvailable()) {
+      const errEl = document.getElementById('webgl-error');
+      if (errEl) errEl.style.display = 'flex';
       console.error('WebGL non disponible');
-      throw new Error('WebGL non disponible');
     }
 
     const container = document.getElementById('canvas-container');
-    console.log('canvas container:', container);
+    if (!container) {
+      console.error('Erreur : #canvas-container introuvable.');
+    }
 
+    // Scène
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xf0f0f0);
 
-    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+    // Caméra
+    const camera = new THREE.PerspectiveCamera(
+      45,
+      container.clientWidth / container.clientHeight,
+      0.1,
+      1000
+    );
     camera.position.set(0, 0, 5);
 
+    // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(container.clientWidth, container.clientHeight);
@@ -64,24 +177,28 @@
     const ambient = new THREE.AmbientLight(0xffffff, 0.8);
     scene.add(ambient);
     const dir = new THREE.DirectionalLight(0xffffff, 0.6);
-    dir.position.set(5,10,7.5);
+    dir.position.set(5, 10, 7.5);
     scene.add(dir);
 
-    // Controls (IMPORTÉ) — n'utiliser **pas** THREE.OrbitControls
+    // Controls (importés)
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
+    controls.target.set(0, 0, 0);
 
-    // Loader OBJ (IMPORTÉ)
+    // Loader OBJ (importé)
     const loader = new OBJLoader();
     const modelGroup = new THREE.Group();
     scene.add(modelGroup);
 
-    const objPath = 'test_pots.obj'; // <-- mets test_pots.obj à la racine du repo (ou change le chemin)
+    // Chemin vers ton OBJ (ajuste si dans un sous-dossier)
+    const objPath = 'test_pots.obj';
+
     loader.load(
       objPath,
       (object) => {
-        console.log('Modèle OBJ chargé :', object);
-        // Assure que tous les meshes ont un matériau si nécessaire
+        console.log('✅ OBJ chargé :', object);
+
+        // Si pas de matériaux fournis, donner un matériau par défaut
         object.traverse((child) => {
           if (child.isMesh) {
             if (!child.material) child.material = new THREE.MeshStandardMaterial({ color: 0xaaaaaa });
@@ -92,40 +209,47 @@
 
         modelGroup.add(object);
 
-        // recentrer et scale automatique
+        // Centrer et scale automatique
         const bbox = new THREE.Box3().setFromObject(modelGroup);
         const size = bbox.getSize(new THREE.Vector3());
         const center = bbox.getCenter(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z);
         if (maxDim > 0) {
-          const desired = 2.0;
-          const s = desired / maxDim;
-          modelGroup.scale.setScalar(s);
+          const desired = 2.0; // taille souhaitée en unités three
+          const scale = desired / maxDim;
+          modelGroup.scale.setScalar(scale);
           bbox.setFromObject(modelGroup);
           bbox.getCenter(center);
         }
-        // recentrer le groupe
+
+        // Recentre le groupe pour que le centre soit à l'origine
         modelGroup.position.x += (modelGroup.position.x - center.x);
         modelGroup.position.y += (modelGroup.position.y - center.y);
         modelGroup.position.z += (modelGroup.position.z - center.z);
 
-        // ajuster la caméra pour voir le modèle
+        // Place la caméra en fonction de la taille du modèle
         const adjustedSize = Math.max(size.x, size.y, size.z) * (modelGroup.scale.x || 1);
         const camDist = Math.max(3, adjustedSize * 2.5);
         camera.position.set(center.x, center.y, center.z + camDist);
         controls.target.copy(center);
         controls.update();
+
+        console.log('Modèle centré et échelle ajustée.');
       },
       (xhr) => {
-        if (xhr.lengthComputable) console.log(`OBJ: ${(xhr.loaded / xhr.total * 100).toFixed(1)}%`);
-        else console.log('OBJ: progression inconnue');
+        if (xhr.lengthComputable) {
+          console.log(`Chargement OBJ : ${(xhr.loaded / xhr.total * 100).toFixed(1)}%`);
+        } else {
+          console.log('Chargement OBJ : progression non calculable');
+        }
       },
       (err) => {
-        console.error('Erreur chargement OBJ:', err);
-        alert('Erreur lors du chargement du fichier .obj (voir console).');
+        console.error('Erreur chargement OBJ :', err);
+        alert('Erreur lors du chargement de test_pots.obj (voir console).');
       }
     );
 
+    // Animation loop
     function animate() {
       requestAnimationFrame(animate);
       controls.update();
@@ -133,7 +257,7 @@
     }
     animate();
 
-    // resize
+    // Adaptation au redimensionnement
     window.addEventListener('resize', () => {
       camera.aspect = container.clientWidth / container.clientHeight;
       camera.updateProjectionMatrix();
