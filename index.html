@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Planter - Plantastic</title>
+
+  <!-- Police -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+
+    header {
+      background: url("images/fond-plantes.webp") no-repeat center center;
+      background-size: cover;
+      color: white;
+      padding: 50px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 50px;
+    }
+
+    nav {
+      background: #008000;
+      padding: 10px;
+      text-align: center;
+    }
+
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+
+    nav a:hover {
+      color: black;
+    }
+
+    main {
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Conteneur pour l'objet 3D */
+    #canvas-container {
+      width: 800px;
+      height: 600px;
+      border: 1px solid #ccc;
+      background-color: #f0f0f0;
+      margin: auto;
+      position: relative;
+    }
+
+    /* message si WebGL indisponible */
+    #webgl-error {
+      position: absolute;
+      left: 0; right: 0; top: 0; bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      font-weight: bold;
+      background: rgba(255,255,255,0.95);
+      z-index: 5;
+      display: none;
+      padding: 10px;
+      text-align: center;
+    }
+
+    footer {
+      background: #582900;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    /* Responsive fallback: shrink container on small screens */
+    @media (max-width: 900px) {
+      #canvas-container {
+        width: 95%;
+        height: 60vh;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Plantastic</h1>
+    <p>Amélie CUESTA and Tom DE SAINT JORE</p>
+  </header>
+
+  <nav>
+    <a href="index.html">Accueil</a>
+    <a href="a_propos.html">À propos</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+
+  <main>
+    <h2>Visualisation 3D</h2>
+    <p>Le modèle 3D sera affiché ici.</p>
+    <div id="canvas-container">
+      <div id="webgl-error">WebGL non disponible dans ce navigateur.</div>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 E4 project</p>
+  </footer>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js",
+        "three/examples/jsm/": "https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/"
+      }
+    }
+  </script>
+
+  <!-- Script principal (ES modules — Option A : CDN URLs) -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+    import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+
+    // Vérification WebGL simple
+    function isWebGLAvailable() {
+      try {
+        const canvas = document.createElement('canvas');
+        return !!(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+      } catch (e) {
+        return false;
+      }
+    }
+    if (!isWebGLAvailable()) {
+      const errEl = document.getElementById('webgl-error');
+      if (errEl) errEl.style.display = 'flex';
+      console.error('WebGL non disponible');
+    }
+
+    const container = document.getElementById('canvas-container');
+    if (!container) {
+      console.error('Erreur : #canvas-container introuvable.');
+    }
+
+    // Scène
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xf0f0f0);
+
+    // Caméra
+    const camera = new THREE.PerspectiveCamera(
+      45,
+      container.clientWidth / container.clientHeight,
+      0.1,
+      1000
+    );
+    camera.position.set(0, 0, 5);
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.shadowMap.enabled = true;
+    container.appendChild(renderer.domElement);
+
+    // Lumières
+    const ambient = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(ambient);
+    const dir = new THREE.DirectionalLight(0xffffff, 0.6);
+    dir.castShadow = true;
+    dir.position.set(5, 10, 7.5);
+    scene.add(dir);
+
+    // Controls (importés)
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.target.set(0, 0, 0);
+
+    // Loader OBJ (importé)
+    const loader = new OBJLoader();
+    const modelGroup = new THREE.Group();
+    scene.add(modelGroup);
+
+    // Chemin vers ton OBJ (ajuste si dans un sous-dossier)
+    const objPath = './test_pots.obj';
+
+    loader.load(
+      objPath,
+      (object) => {
+        console.log('✅ OBJ chargé :', object);
+
+        // Si pas de matériaux fournis, donner un matériau par défaut
+        object.traverse((child) => {
+          if (child.isMesh) {
+            if (!child.material) child.material = new THREE.MeshStandardMaterial({ color: 0xaaaaaa });
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+
+        modelGroup.add(object);
+
+        // Si les matériaux/MTL manquent ou rendent l'objet invisible, forcer un matériau standard visible
+        object.traverse((child) => {
+          if (child.isMesh) {
+            child.material = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, side: THREE.DoubleSide });
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+
+        // Calculer bbox, centre et taille (après ajout)
+        const bbox = new THREE.Box3().setFromObject(modelGroup);
+        const size = bbox.getSize(new THREE.Vector3());
+        const center = bbox.getCenter(new THREE.Vector3());
+
+        // Scale uniforme pour que la plus grande dimension fasse ~desired
+        const maxDim = Math.max(size.x, size.y, size.z);
+        if (maxDim > 0) {
+          const desired = 2.0;
+          const scale = desired / maxDim;
+          modelGroup.scale.setScalar(scale);
+        }
+
+        // Recalculer bbox/centre après scale
+        bbox.setFromObject(modelGroup);
+        bbox.getSize(size);
+        bbox.getCenter(center);
+
+        // Recentrer : positionner le groupe pour que son centre soit à l'origine
+        modelGroup.position.set(-center.x, -center.y, -center.z);
+
+        // Placer la caméra et les controls de façon fiable (regarder l'origine)
+        const adjustedSize = Math.max(size.x, size.y, size.z) * (modelGroup.scale.x || 1);
+        const camDist = Math.max(3, adjustedSize * 2.5);
+        camera.position.set(0, 0, camDist);
+        camera.lookAt(0, 0, 0);
+        controls.target.set(0, 0, 0);
+        controls.update();
+
+        // Helpers pour debug (affiche axes et bounding box)
+        scene.add(new THREE.AxesHelper(1.5));
+        scene.add(new THREE.Box3Helper(bbox, 0xff0000));
+
+        console.log('Modèle centré et échelle ajustée.');
+      },
+      (xhr) => {
+        if (xhr.lengthComputable) {
+          console.log(`Chargement OBJ : ${(xhr.loaded / xhr.total * 100).toFixed(1)}%`);
+        } else {
+          console.log('Chargement OBJ : progression non calculable');
+        }
+      },
+      (err) => {
+        console.error('Erreur chargement OBJ :', err);
+        alert('Erreur lors du chargement de test_pots.obj (voir console).');
+      }
+    );
+
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Adaptation au redimensionnement
+    window.addEventListener('resize', () => {
+      camera.aspect = container.clientWidth / container.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(container.clientWidth, container.clientHeight);
+    });
+  </script>
+</body>
+</html>
+
