@@ -169,14 +169,9 @@
     scene.background = new THREE.Color(0xf0f0f0);
 
     // Caméra
-    const camera = new THREE.PerspectiveCamera(
-      45,
-      container.clientWidth / container.clientHeight,
-      0.1,
-      1000
-    );
+    const camera = new THREE.PerspectiveCamera(45,container.clientWidth / container.clientHeight,0.1,1000);
     camera.position.set(0, 0, 5);
-
+    
     // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -202,13 +197,10 @@
     const modelGroup = new THREE.Group();
     scene.add(modelGroup);
 
-    // Chemin vers ton OBJ (ajuste si dans un sous-dossier)
+    // Chemin vers OBJ
     const objPath = './test_pots.obj';
 
-    loader.load(
-      objPath,
-      (object) => {
-        console.log('✅ OBJ chargé :', object);
+    loader.load(objPath,(object) => {console.log(' OBJ chargé :', object);
 
         // Si pas de matériaux fournis, donner un matériau par défaut
         object.traverse((child) => {
@@ -295,6 +287,7 @@
   </script>
 </body>
 </html>
+
 
 
 
